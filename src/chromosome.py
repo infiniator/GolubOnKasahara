@@ -1,4 +1,7 @@
+from functools import cmp_to_key
+
 from src.dataset import readData
+from src.comparator import compare
 
 
 class Chromosome:  # done
@@ -7,22 +10,26 @@ class Chromosome:  # done
     numProcs = 0         # number of input processors
     fitness = 0          # fitness of the chromosome
     initialized = False  # used to ensure readData() is called only once
-    data = None          # data from the Braun dataset
+    data = None          # data from the Kasahara dataset
 
-    def __init__(self, tasks=512, procs=16):
-        self.numTasks = tasks
-        self.numProcs = procs
-        for i in range(0, self.numProcs):
-            self.schedule.append([0] * self.numTasks)
+    def __init__(self):
+        pass
 
     # the fitness of a chromosome, currently, is its finishing time
     def calculateFitness(self):
         if not Chromosome.initialized:
-            Chromosome.data = readData()
             Chromosome.initialized = True
-        ftp = [0] * self.numProcs
-        for i in range(0, self.numProcs):
-            for j in range(0, len(self.schedule[i])):
-                ftp[i] += Chromosome.data[self.schedule[i][j]][i]
-        for i in range(0, len(ftp)):
-            self.fitness += ftp[i]
+            Chromosome.data = readData(0)
+            Chromosome.numProcs = Chromosome.data['numProcs']
+            Chromosome.numTasks = Chromosome.data['numTasks']
+            del Chromosome.data['numProcs']
+            del Chromosome.data['numTasks']
+            Chromosome.data = list(Chromosome.data.values())
+            # sort according to heights
+            Chromosome.data.sort(key=cmp_to_key(compare))
+            j = 0
+            for i in Chromosome.data:  # save key for internal calculation later
+                i['key'] = j
+                j += 1
+        # for i in Chromosome.data:
+            # calculation of fitness is incomplete
