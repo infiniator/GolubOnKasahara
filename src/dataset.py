@@ -1,12 +1,19 @@
-def readData(id):
-    if id < 10:
-        id = '000' + str(id)
-    else:
-        if id < 100:
-            id = '00' + str(id)
-        else:
-            id = '0' + str(id)
-    id = 'rand' + id
-    file = open(id, 'r')
-    data = 0  # calculate
-    return data
+def readData(fileID):
+    fileID = '../Dataset/rand' + f'{fileID:04d}' + '.txt'
+    file = open(fileID, 'r')
+    temp = file.readline()
+    temp = [int(i) for i in temp.strip().split()]
+    data = {'numTasks': temp[0], 'numProcs': temp[1]}
+    for i in file.readlines():
+        i = [int(j) for j in i.strip().split()]
+        tempStr = 'proc' + f'{i[0]:02d}'
+        data[tempStr] = {}
+        data[tempStr]['procID'] = i[0]
+        data[tempStr]['height'] = i[1]
+        data[tempStr]['procTime'] = i[2]
+        data[tempStr]['numPre'] = i[3]
+        if i[3] > 0:
+            for j in range(4, len(i)):
+                tempStr2 = 'pre' + str(j - 3)
+                data[tempStr][tempStr2] = i[j]
+        return data  # returns a dictionary
