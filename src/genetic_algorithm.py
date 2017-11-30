@@ -21,8 +21,13 @@ def initialisation():  # done
     return population
 
 
-def selection():
-    print("he")
+def selection(population, k):
+    best = None
+    for i in range(0, k):
+        index = population[randrange(0, len(population))]
+        if best is None or best.fitness < index.fitness:
+            best = index
+    return best
 
 
 def crossover(a, b):
