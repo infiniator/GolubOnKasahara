@@ -7,3 +7,12 @@ def compare(x, y):
         return -1
     else:
         return 1
+
+
+def compareChromosomes(x, y):
+    if x.fitness > y.fitness:
+        return 1
+    elif x.fitness < y.fitness:
+        return -1
+    else:
+        return 0

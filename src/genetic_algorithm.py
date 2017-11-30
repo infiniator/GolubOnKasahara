@@ -2,7 +2,6 @@ from functools import cmp_to_key
 from random import randrange
 from src.chromosome import Chromosome
 from bisect import bisect_left
-from src.binary_search import binarySearch
 from src.comparator import compare
 
 
@@ -27,13 +26,23 @@ def selection():
 
 
 def crossover(a, b):
-    randProc = randrange(0, Chromosome.numProcs)
-    randTask = randrange(0, Chromosome.numTasks)
-    indexA = -1
-    indexB = -1
-    for i in range(0, Chromosome.numProcs):
-        indexB = binarySearch(b[i], randTask)
-        indexA = binarySearch(a[i], randTask)
+    candidate1 = [0] * Chromosome.numTasks
+    candidate2 = [0] * Chromosome.numTasks
+    for i in range(0, len(a.schedule)):
+        for j in range(0, len(a.schedule[i])):
+            candidate1[Chromosome.data[j - 1]['key']] = i
+    for i in range(0, len(b.schedule)):
+        for j in range(0, len(b.schedule[i])):
+            candidate2[Chromosome.data[j - 1]['key']] = i
+    r = randrange(1, 7)
+    new1 = candidate1[:r] + candidate2[r:]
+    new2 = candidate2[:r] + candidate1[r:]
+    tempChromosome = Chromosome()
+    temp2 = Chromosome()
+    for i in range(0, len(new1)):
+        tempChromosome.schedule[new1[i]].append(Chromosome.data[i])
+        temp2.schedule[new2[i]].append(Chromosome.data[i])
+    return [tempChromosome, temp2]
 
 
 def mutation(a):  # done

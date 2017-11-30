@@ -20,6 +20,7 @@ class Chromosome:
             del Chromosome.data['numProcs']
             del Chromosome.data['numTasks']
             Chromosome.data = list(Chromosome.data.values())
+            # now, data is a list of task dictionaries sorted topologically
             # sort according to heights
             Chromosome.data.sort(key=cmp_to_key(compare))
             j = 0
@@ -41,11 +42,11 @@ class Chromosome:
                     if len(temp) > 0 and ftp[p] < ftp[j]:
                         ftp[p] = ftp[j] + Chromosome.data[i]['procTime']
                         break
-        return max(ftp)
+        self.fitness = max(ftp)
 
     # to internally search for concerned processor of a task
     def searchInProc(self, task):
         for i in self.schedule:
             for j in i:
-                if (task + 1) == self.schedule[i][j]['procID']:
+                if (task + 1) == j['procID']:
                     return i
