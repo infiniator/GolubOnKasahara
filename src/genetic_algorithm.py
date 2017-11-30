@@ -3,13 +3,14 @@ from random import randrange
 from src.chromosome import Chromosome
 from bisect import bisect_left
 from src.comparator import compare
+from copy import copy
 
 
-def initialisation():  # done
+def initialisation(populationSize):  # done
     population = []  # a list of chromosomes
     tempChromosome = Chromosome()
     # a temporary chromosome to be manipulated before adding to the population
-    for i in range(0, 100):
+    for i in range(0, populationSize):
         for j in Chromosome.data:
             k = randrange(0, Chromosome.numProcs)
             tempChromosome.schedule[k].append(j)
@@ -21,11 +22,11 @@ def initialisation():  # done
     return population
 
 
-def selection(population, k):
+def selection(population, k):  # tournament selection is used
     best = None
     for i in range(0, k):
         index = population[randrange(0, len(population))]
-        if best is None or best.fitness < index.fitness:
+        if best is None or best.fitness > index.fitness:
             best = index
     return best
 
@@ -47,22 +48,24 @@ def crossover(a, b):
     for i in range(0, len(new1)):
         tempChromosome.schedule[new1[i]].append(Chromosome.data[i])
         temp2.schedule[new2[i]].append(Chromosome.data[i])
-    return [tempChromosome, temp2]
+    return tempChromosome, temp2
 
 
 def mutation(a):  # done
     removeFrom = -1
     addTo = -1
-    while removeFrom == addTo and len(a.schedule[removeFrom]) > 0:
-        removeFrom = randrange(0, Chromosome.numProcs)
-        addTo = randrange(0, Chromosome.numProcs)
-    randTask = randrange(0, len(a.schedule[removeFrom]))
-    a.schedule[addTo].insert(
-        bisect_left(
-            [i['key'] for i in a.schedule[addTo]],
-            a.schedule[removeFrom][randTask]['key']
-        ),
-        a.schedule[removeFrom][randTask]
-    )
-    del a.schedule[removeFrom][randTask]
+    a = copy(a)
+    if len([len(i) for i in a.schedule if len(i) > 0]) > 1:
+        while removeFrom == addTo and len(a.schedule[removeFrom]) == 0:
+            removeFrom = randrange(0, Chromosome.numProcs)
+            addTo = randrange(0, Chromosome.numProcs)
+        randTask = randrange(0, len(a.schedule[removeFrom]))
+        a.schedule[addTo].insert(
+            bisect_left(
+                [i['key'] for i in a.schedule[addTo]],
+                a.schedule[removeFrom][randTask]['key']
+            ),
+            a.schedule[removeFrom][randTask]
+        )
+        del a.schedule[removeFrom][randTask]
     return a

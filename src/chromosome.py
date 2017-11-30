@@ -27,6 +27,7 @@ class Chromosome:
             for i in Chromosome.data:  # save key for internal calculation later
                 i['key'] = j
                 j += 1
+        self.schedule = [[] for i in range(0, Chromosome.numProcs)]
 
     # the fitness of a chromosome, currently, is its finishing time
     def calculateFitness(self):
@@ -46,7 +47,7 @@ class Chromosome:
 
     # to internally search for concerned processor of a task
     def searchInProc(self, task):
-        for i in self.schedule:
-            for j in i:
+        for i in range(0, len(self.schedule)):
+            for j in self.schedule[i]:
                 if (task + 1) == j['procID']:
                     return i
