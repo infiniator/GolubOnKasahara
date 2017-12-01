@@ -31,23 +31,29 @@ class Chromosome:
 
     # the fitness of a chromosome, currently, is its finishing time
     def calculateFitness(self):
-        ftp = [0] * Chromosome.numProcs
-        for i in range(0, Chromosome.numTasks):
+        finishTime = [0] * Chromosome.numTasks
+        pre = []
+        for i in Chromosome.data:
             p = self.searchInProc(i)
-            ftp[p] += Chromosome.data[i]['procTime']
-            for j in range(0, Chromosome.numProcs):
-                if p == j:
-                    continue
-                for k in self.schedule[j]:
-                    temp = [k[i] for i in k if 'pre' in i]
-                    if len(temp) > 0 and ftp[p] < ftp[j]:
-                        ftp[p] = ftp[j] + Chromosome.data[i]['procTime']
-                        break
-        self.fitness = max(ftp)
+            if self.schedule[p][0] != i:
+                for j in range(0, len(self.schedule[p]) - 1):
+                    if self.schedule[p][j + 1] == i:  # forced predecessor
+                        pre.append(self.schedule[p][j]['procID'])
+            for k in i:
+                if 'pre' in k:
+                    pre.append(i[k])
+            if len(pre) > 0:
+                finishTime[i['procID'] - 1] = max(
+                    [finishTime[j - 1] for j in pre]) + i['procTime']
+            else:
+                finishTime[i['procID'] - 1] = i['procTime']
+        self.fitness = max(finishTime)
 
     # to internally search for concerned processor of a task
     def searchInProc(self, task):
-        for i in range(0, len(self.schedule)):
-            for j in self.schedule[i]:
-                if (task + 1) == j['procID']:
-                    return i
+        x = 0
+        for i in self.schedule:
+            for j in i:
+                if task == j:
+                    return x
+            x += 1

@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 
 start_time = time()
 # populationSize = int(input('Enter Population Size: '))
-population = initialisation(100)
+population = initialisation(1000)
 # numIterations = int(input('Enter number of iterations: '))
 myPlot = []
-for i in range(0, 500):
+for i in range(0, 5000):
     print(i)
     children = []
     while len(children) < len(population):
@@ -31,8 +31,8 @@ for i in range(0, 500):
     population = population[:10]
     myPlot.append(population[0].fitness)
 print(population[0].fitness)
+print("--- %s seconds ---" % (time() - start_time))
 plt.plot(myPlot)
 plt.xlabel('Number of iterations')
 plt.ylabel('Fitness of the population')
 plt.show()
-print("--- %s seconds ---" % (time() - start_time))
