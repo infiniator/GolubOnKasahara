@@ -11,10 +11,10 @@ class Chromosome:
     initialized = False  # used to ensure readData() is called only once
     data = None  # data from the Kasahara dataset
 
-    def __init__(self):
+    def __init__(self, file=0):
         if not Chromosome.initialized:
             Chromosome.initialized = True
-            Chromosome.data = readData(0)
+            Chromosome.data = readData(file)
             Chromosome.numProcs = Chromosome.data['numProcs']
             Chromosome.numTasks = Chromosome.data['numTasks']
             del Chromosome.data['numProcs']
@@ -32,8 +32,8 @@ class Chromosome:
     # the fitness of a chromosome, currently, is its finishing time
     def calculateFitness(self):
         finishTime = [0] * Chromosome.numTasks
-        pre = []
         for i in Chromosome.data:
+            pre = []
             p = self.searchInProc(i)
             if self.schedule[p][0] != i:
                 for j in range(0, len(self.schedule[p]) - 1):

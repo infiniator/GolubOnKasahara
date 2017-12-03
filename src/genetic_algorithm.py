@@ -40,7 +40,7 @@ def crossover(a, b):
     for i in range(0, len(b.schedule)):
         for j in range(0, len(b.schedule[i])):
             candidate2[Chromosome.data[j - 1]['key']] = i
-    r = randrange(1, Chromosome.numTasks - 1)
+    r = randrange(1, Chromosome.numTasks)
     new1 = candidate1[:r] + candidate2[r:]
     new2 = candidate2[:r] + candidate1[r:]
     tempChromosome = Chromosome()
